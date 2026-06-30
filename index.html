@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crust — Dilim Pizza</title>
+<meta name="description" content="Crust: Dilim pizza markası. Hızlı servis, erişilebilir fiyat.">
+<meta property="og:title" content="Crust — Dilim Pizza">
+<meta property="og:description" content="Dilim dilim lezzet. Crust markasını keşfet.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23C1392B'/%3E%3Cpath d='M50 14 L82 70 L18 70 Z' fill='%23F3EEE4'/%3E%3Ccircle cx='44' cy='52' r='4' fill='%23C1392B'/%3E%3Ccircle cx='58' cy='58' r='3' fill='%234A6741'/%3E%3Ccircle cx='50' cy='40' r='3' fill='%23C1392B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Work+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C1392B;
+  --red-dark:#8C2A1E;
+  --red-dim:rgba(193,57,43,0.08);
+  --green:#5B7F53;
+  --green-dark:#3E5A38;
+  --ink:#221F1A;
+  --ink-soft:#5A5548;
+  --ink-20:rgba(34,31,26,0.14);
+  --cream:#F3EEE4;
+  --cream-2:#E9E0CC;
+  --paper:#FBF8F2;
+  --line:rgba(34,31,26,0.14);
+  --shadow-sm:0 1px 2px rgba(34,31,26,0.06), 0 4px 10px rgba(34,31,26,0.06);
+  --shadow-md:0 2px 4px rgba(34,31,26,0.07), 0 10px 28px rgba(34,31,26,0.10);
+  --space-xs:4px; --space-sm:8px; --space-md:16px; --space-lg:24px;
+  --space-xl:48px; --space-2xl:80px; --space-3xl:120px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Work Sans',sans-serif;color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+h1,h2,h3,h4,.display{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;letter-spacing:-0.02em;line-height:1.05;color:var(--ink);}
+.mono{font-family:'Space Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{cursor:pointer;border:none;background:none;font-family:inherit;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+::selection{background:var(--red);color:var(--paper);}
+:focus-visible{outline:2.5px solid var(--green);outline-offset:3px;}
+
+.eyebrow{
+  font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--red);display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.eyebrow::before{content:'';width:18px;height:2px;background:var(--red);}
+
+/* ── noise texture ── */
+.noise{position:relative;}
+.noise::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:0.045;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── crust scalloped edge ── */
+.crust-edge{height:28px;width:100%;}
+.crust-edge.down{
+  -webkit-mask-image:radial-gradient(circle at 16px 28px, transparent 15px, black 16px);
+  mask-image:radial-gradient(circle at 16px 28px, transparent 15px, black 16px);
+  -webkit-mask-size:32px 32px;mask-size:32px 32px;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+}
+.crust-edge.up{
+  -webkit-mask-image:radial-gradient(circle at 16px 0, transparent 15px, black 16px);
+  mask-image:radial-gradient(circle at 16px 0, transparent 15px, black 16px);
+  -webkit-mask-size:32px 32px;mask-size:32px 32px;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+}
+
+/* ── nav ── */
+header{position:sticky;top:0;z-index:90;background:var(--paper);border-bottom:1px solid var(--line);transition:box-shadow 0.3s ease;}
+header.scrolled{box-shadow:var(--shadow-sm);}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1180px;margin:0 auto;}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.02em;display:flex;flex-direction:column;gap:5px;}
+.logo .bar{
+  height:5px;width:40px;background:var(--red);
+  -webkit-mask-image:radial-gradient(circle at 6px 0, transparent 5px, black 6px);
+  mask-image:radial-gradient(circle at 6px 0, transparent 5px, black 6px);
+  -webkit-mask-size:12px 5px;mask-size:12px 5px;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+}
+.nav-links{display:flex;gap:32px;align-items:center;font-size:14.5px;font-weight:500;}
+.nav-links a{position:relative;padding:4px 0;color:var(--ink-soft);transition:color 0.2s ease;}
+.nav-links a:not(.btn)::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+.nav-links a:not(.btn):hover{color:var(--ink);}
+.nav-links a:not(.btn):hover::after{width:100%;}
+.btn{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:11px 20px;border-radius:3px;display:inline-flex;align-items:center;gap:8px;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease, background 0.2s ease;}
+.btn-primary{background:var(--red);color:var(--paper);box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.btn-primary:active{transform:translateY(0) scale(0.98);}
+.btn-ghost{border:1.5px solid var(--ink);color:var(--ink);}
+.btn-ghost:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px);}
+.btn-ghost:active{transform:translateY(0) scale(0.97);}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:6px;}
+.hamburger span{width:24px;height:2px;background:var(--ink);transition:transform 0.25s ease, opacity 0.25s ease;}
+
+/* ── hero ── */
+.hero{
+  position:relative;
+  background:
+    radial-gradient(ellipse 700px 460px at 86% -8%, rgba(193,57,43,0.16), transparent),
+    radial-gradient(ellipse 600px 400px at 0% 100%, rgba(91,127,83,0.14), transparent),
+    var(--cream);
+  padding:64px 0 0;overflow:hidden;
+}
+.hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;max-width:1180px;margin:0 auto;padding:0 24px 64px;}
+.hero-eyebrow{animation:rise 0.7s cubic-bezier(0.16,1,0.3,1) both;}
+.hero h1{font-size:clamp(40px,5.6vw,76px);animation:rise 0.7s cubic-bezier(0.16,1,0.3,1) 0.08s both;}
+.hero h1 .hl{color:var(--red);font-style:italic;font-weight:400;}
+.hero p.lead{font-size:18px;color:var(--ink-soft);max-width:46ch;margin-top:22px;animation:rise 0.7s cubic-bezier(0.16,1,0.3,1) 0.16s both;}
+.hero-ctas{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;animation:rise 0.7s cubic-bezier(0.16,1,0.3,1) 0.24s both;}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+.hero-visual{position:relative;animation:rise 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both;}
+.hero-img-frame{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/5;box-shadow:var(--shadow-md);}
+.hero-img-frame img{width:100%;height:100%;object-fit:cover;}
+.hero-img-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(to top, rgba(34,31,26,0.45), transparent 50%);}
+.hero-price-tag{
+  position:absolute;bottom:-22px;left:-22px;background:var(--ink);color:var(--paper);border-radius:6px;
+  padding:20px 24px;box-shadow:var(--shadow-md);transform:rotate(-2deg);
+}
+.hero-price-tag .num{font-family:'Space Mono',monospace;font-size:32px;font-weight:700;color:#F0CDB8;line-height:1;}
+.hero-price-tag .lbl{margin-top:6px;font-size:12.5px;color:#CFC9BC;}
+
+.quickfacts{display:flex;flex-wrap:wrap;gap:10px;max-width:1180px;margin:0 auto;padding:0 24px 40px;}
+.pill{font-family:'Space Mono',monospace;font-size:12.5px;padding:9px 16px;border:1.3px solid var(--line);border-radius:30px;background:var(--paper);color:var(--ink-soft);}
+
+/* ── generic section ── */
+section{padding:var(--space-3xl) 0;}
+.section-head{max-width:640px;margin-bottom:52px;}
+.section-head h2{font-size:clamp(28px,3.6vw,46px);}
+.section-head p{margin-top:14px;font-size:16px;color:var(--ink-soft);}
+
+/* ── about ── */
+.about{background:var(--cream);}
+.about-inner{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+.about-img{position:relative;}
+.about-img-main{border-radius:8px;aspect-ratio:4/5;object-fit:cover;width:100%;box-shadow:var(--shadow-md);}
+.about-pill{
+  position:absolute;bottom:-22px;right:-22px;background:var(--paper);border:1px solid var(--line);
+  border-radius:30px;padding:14px 22px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;
+  box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.about-pill .tag{background:var(--red);color:var(--paper);font-size:11px;padding:3px 8px;border-radius:30px;font-weight:700;}
+.about-text p{margin-top:18px;font-size:16px;color:var(--ink-soft);max-width:46ch;}
+
+/* ── menu ── */
+.menu{background:var(--paper);}
+.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.menu-card{background:var(--paper);transition:background 0.25s ease;}
+.menu-card:hover{background:var(--cream);}
+.menu-img{aspect-ratio:1/1;overflow:hidden;position:relative;}
+.menu-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);}
+.menu-card:hover .menu-img img{transform:scale(1.07);}
+.menu-tag{position:absolute;top:14px;left:14px;z-index:2;background:var(--ink);color:var(--paper);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:5px 11px;border-radius:30px;}
+.menu-body{padding:22px 20px 26px;}
+.menu-body h3{font-size:18px;margin-bottom:6px;}
+.menu-body p{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.menu-footer{display:flex;justify-content:space-between;align-items:center;}
+.price{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--ink);}
+.slice-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--red);background:var(--red-dim);padding:5px 10px;border-radius:30px;}
+
+/* ── features (felsefe) ── */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.feat{background:var(--paper);padding:38px 32px;transition:background 0.25s ease;}
+.feat:hover{background:var(--cream);}
+.feat-icon{width:40px;height:40px;color:var(--red);margin-bottom:18px;}
+.feat h3{font-size:19px;margin-bottom:10px;}
+.feat p{color:var(--ink-soft);font-size:15px;}
+
+/* ── gallery ── */
+.gallery-section{background:var(--cream);}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:170px;gap:10px;}
+.gallery a:nth-child(1){grid-column:span 2;grid-row:span 2;}
+.gallery a:nth-child(4){grid-row:span 2;}
+.g-item{position:relative;overflow:hidden;border-radius:6px;}
+.g-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);}
+.g-item:hover img{transform:scale(1.07);}
+.g-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top, rgba(34,31,26,0.5), transparent 55%);}
+
+/* ── faq ── */
+.faq-section{background:var(--cream);}
+.faq-item{border-top:1px solid var(--line);}
+.faq-item:last-child{border-bottom:1px solid var(--line);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:24px 4px;font-weight:600;font-size:16.5px;width:100%;text-align:left;color:var(--ink);}
+.faq-q .chev{width:18px;height:18px;flex-shrink:0;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);color:var(--red);}
+.faq-item.open .chev{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease;}
+.faq-a p{padding:0 4px 24px;color:var(--ink-soft);font-size:15px;max-width:62ch;}
+
+/* ── cta ── */
+.cta-section{background:var(--green-dark);color:var(--paper);position:relative;}
+.cta-section .eyebrow{color:#BFE0A8;}
+.cta-section .eyebrow::before{background:#BFE0A8;}
+.cta-section h2{color:var(--paper);font-size:clamp(32px,4.4vw,56px);}
+.cta-section p.lead{color:#D8E6CC;font-size:17px;max-width:46ch;margin:18px auto 0;}
+.cta-inner{text-align:center;max-width:680px;margin:0 auto;}
+.cta-section .btn-primary{margin-top:36px;}
+
+/* ── franchise form ── */
+.franchise-section{background:var(--green-dark);color:var(--paper);position:relative;}
+.franchise-section .eyebrow{color:#BFE0A8;}
+.franchise-section .eyebrow::before{background:#BFE0A8;}
+.franchise-section h2{color:var(--paper);font-size:clamp(28px,3.6vw,44px);}
+.franchise-section p.lead{color:#D8E6CC;font-size:16.5px;max-width:42ch;margin-top:16px;}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
+form{display:grid;gap:14px;}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+label{font-family:'Space Mono',monospace;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;color:#BFD8B2;display:block;margin-bottom:6px;}
+input,select,textarea{
+  width:100%;padding:13px 14px;border-radius:4px;border:1.5px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.06);color:var(--paper);font-family:'Work Sans',sans-serif;font-size:14.5px;
+}
+input::placeholder,textarea::placeholder{color:#9DB594;}
+input:focus,select:focus,textarea:focus{border-color:#E8A98F;background:rgba(255,255,255,0.1);}
+select option{color:var(--ink);}
+.submit-btn{
+  margin-top:6px;background:var(--red);color:var(--paper);border:none;padding:15px 24px;
+  border-radius:4px;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;
+  transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease;
+}
+.submit-btn:hover{background:var(--red-dark);transform:translateY(-2px);}
+.submit-btn:active{transform:translateY(0) scale(0.98);}
+.form-note{font-size:12.5px;color:#9DB594;margin-top:4px;}
+.form-success{display:none;background:rgba(232,169,143,0.14);border:1.5px solid #E8A98F;border-radius:6px;padding:16px 18px;font-size:14.5px;margin-top:10px;}
+.form-success.show{display:block;}
+
+/* ── footer ── */
+footer{background:var(--ink);color:#B7B2A4;padding:64px 0 28px;}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+.foot-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:var(--paper);margin-bottom:14px;}
+footer p{font-size:14px;color:#9D988A;max-width:30ch;}
+footer h4{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#8b867a;margin-bottom:16px;}
+footer ul{list-style:none;display:grid;gap:10px;font-size:14.5px;}
+footer ul a{transition:color 0.2s ease;}
+footer ul a:hover{color:var(--paper);}
+.foot-social{display:flex;gap:14px;margin-top:18px;}
+.foot-social a{width:36px;height:36px;border:1.3px solid #4a463c;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s ease, transform 0.2s ease;}
+.foot-social a:hover{border-color:var(--red);transform:translateY(-3px);}
+.foot-bottom{border-top:1px solid #3a362e;padding-top:24px;display:flex;justify-content:space-between;font-size:12.5px;flex-wrap:wrap;gap:10px;}
+
+/* ── reveal ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+@media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
+
+/* ── responsive ── */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;}
+  .hero-visual{max-width:440px;margin:0 auto;}
+  .about-inner{grid-template-columns:1fr;gap:56px;}
+  .about-img{order:-1;max-width:440px;margin:0 auto;}
+  .menu-grid{grid-template-columns:repeat(2,1fr);}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+  .foot-grid{grid-template-columns:1fr 1fr;}
+  .cta-grid{grid-template-columns:1fr;gap:40px;}
+  .gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px;}
+  .gallery a:nth-child(1){grid-column:span 2;grid-row:span 1;}
+  .gallery a:nth-child(4){grid-row:span 1;}
+}
+@media(max-width:768px){
+  .nav-links{
+    position:fixed;top:64px;left:0;right:0;bottom:0;background:var(--paper);
+    flex-direction:column;align-items:flex-start;padding:32px 24px;gap:22px;font-size:19px;
+    transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:80;
+  }
+  .nav-links.open{transform:translateX(0);}
+  .hamburger{display:flex;}
+  .menu-grid{grid-template-columns:1fr;}
+  .feat-grid{grid-template-columns:1fr;}
+  .foot-grid{grid-template-columns:1fr;gap:32px;}
+  .hero-price-tag{left:0;bottom:-18px;padding:16px 20px;}
+  .frow2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav>
+    <a href="#top" class="logo" aria-label="Crust ana sayfa">CRUST<span class="bar"></span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#menu">Menü</a>
+      <a href="#deger">Değerlerimiz</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#sss">SSS</a>
+      <a href="#basvuru">Başvur</a>
+      <a href="#iletisim" class="btn btn-primary">Bize Ulaş</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menüyü aç" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero noise">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow hero-eyebrow">DİLİM PİZZA MARKASI</div>
+        <h1>Her dilim<br><span class="hl">bir his.</span></h1>
+        <p class="lead">Açık fırında pişirilen pizza, dilim dilim, anında servis. Kampüs çevresinde fast-food hızında, gerçek lezzet.</p>
+        <div class="hero-ctas">
+          <a href="#menu" class="btn btn-primary">
+            Menüyü Keşfet
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#deger" class="btn btn-ghost">Markamız Hakkında</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-img-frame">
+          <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=900&q=80" alt="Taze pişmiş dilim pizza, üzerinde fesleğen ve közlenmiş biber" loading="eager">
+        </div>
+        <div class="hero-price-tag">
+          <div class="num mono">CRUST</div>
+          <div class="lbl">dilim pizza markası</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quickfacts">
+      <span class="pill">Dilim Pizza</span>
+      <span class="pill">Açık Fırın</span>
+      <span class="pill">18 Dakika Teslimat</span>
+      <span class="pill">Öğrenci Dostu</span>
+      <span class="pill">Kampüs Çevresinde</span>
+    </div>
+
+    <div class="crust-edge down" style="background:var(--paper);"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="deger">
+    <div class="wrap about-inner">
+      <div class="about-img reveal">
+        <img class="about-img-main" src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=700&q=80" alt="Fırından yeni çıkmış, dilimlenmiş sıcak pizza" loading="lazy">
+        <div class="about-pill"><span class="tag">Yeni</span> Kampüs çevresinde büyüyoruz</div>
+      </div>
+      <div class="about-text reveal">
+        <div class="eyebrow">BİZ KİMİZ</div>
+        <h2>Fast-food hızı, gerçek lezzet — dilim dilim.</h2>
+        <p>Crust, klasik pizza zincirlerinin standartlaşmış ve özensiz ürün algısına tepki olarak doğdu. Her şubemizde pizzayı dilim bazında servis ediyoruz. Lüks değil — erişilebilir ama ödünsüz kalite.</p>
+        <p>Hedefimiz basit: üniversiteli bütçesine sığan, sosyal medyada paylaşılabilir, gerçekten doyurucu bir yemek deneyimi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="menu" id="menu">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">VİTRİN</div>
+        <h2>Vitrin Dilimleri</h2>
+        <p>Hepsi sipariş anında fırınlanır, dilim bazında satılır.</p>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card reveal">
+          <div class="menu-img">
+            <span class="menu-tag">En çok satan</span>
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt="Pepperoni dilim pizza" loading="lazy">
+          </div>
+          <div class="menu-body">
+            <h3>Pepperoni Ateş</h3>
+            <p>Bol pepperoni, acı bal sosu, çift mozzarella.</p>
+            <div class="menu-footer">
+              <span class="slice-badge">dilim bazında satış</span>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="menu-img">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80" alt="Sebzeli dilim pizza" loading="lazy">
+          </div>
+          <div class="menu-body">
+            <h3>Bahçe Karması</h3>
+            <p>Közlenmiş biber, mantar, zeytin, taze fesleğen.</p>
+            <div class="menu-footer">
+              <span class="slice-badge">dilim bazında satış</span>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="menu-img">
+            <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=80" alt="Sucuklu dilim pizza" loading="lazy">
+          </div>
+          <div class="menu-body">
+            <h3>Sucuk Bombası</h3>
+            <p>Acılı sucuk, kavurma soğan, sarımsaklı krema.</p>
+            <div class="menu-footer">
+              <span class="slice-badge">dilim bazında satış</span>
+            </div>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="menu-img">
+            <span class="menu-tag">Yeni</span>
+            <img src="https://images.unsplash.com/photo-1548369937-47519962c11a?w=600&q=80" alt="Dört peynirli beyaz pizza dilimi" loading="lazy">
+          </div>
+          <div class="menu-body">
+            <h3>Dört Peynir Beyaz</h3>
+            <p>Mozzarella, gorgonzola, parmesan, kaşar — sosuz beyaz taban.</p>
+            <div class="menu-footer">
+              <span class="slice-badge">dilim bazında satış</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FELSEFE -->
+  <section>
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">FELSEFEMİZ</div>
+        <h2>Hız ve lezzet, dilim dilim aynı anda</h2>
+      </div>
+      <div class="feat-grid">
+        <div class="feat">
+          <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+          <h3>Hızlı servis</h3>
+          <p>Sipariş anından kapına gelene kadar fast-food hızı, dolu lezzet.</p>
+        </div>
+        <div class="feat">
+          <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1116 0 8 8 0 01-16 0z"/><path d="M9 12l2 2 4-4"/></svg>
+          <h3>Dilim bazında satış</h3>
+          <p>İstediğin kadar, istediğin çeşitten al. Tek dilim de yetebilir, beş de.</p>
+        </div>
+        <div class="feat">
+          <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18l4-9 4 9M5.5 14.5h5M16 18V8m0 0l-3 3m3-3l3 3"/></svg>
+          <h3>Erişilebilir fiyat</h3>
+          <p>Kaliteden ödün vermeden öğrenci bütçesine uygun fiyat. Dilim bazında ödeme, dilim bazında lezzet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery-section" id="galeri">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <div class="eyebrow">İÇERİDEN</div>
+        <h2>Mutfaktan masaya</h2>
+      </div>
+      <div class="gallery">
+        <a class="g-item" href="#"><img loading="lazy" src="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=900&q=80" alt="Pizza hazırlama süreci"></a>
+        <a class="g-item" href="#"><img loading="lazy" src="https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=600&q=80" alt="Fırından çıkan pizza"></a>
+        <a class="g-item" href="#"><img loading="lazy" src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&q=80" alt="Taze malzemeler"></a>
+        <a class="g-item" href="#"><img loading="lazy" src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&q=80" alt="Pizza dilimleri"></a>
+        <a class="g-item" href="#"><img loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" alt="Crust şube iç mekan"></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section" id="sss">
+    <div class="wrap reveal" style="max-width:820px;">
+      <div class="section-head">
+        <div class="eyebrow">SSS</div>
+        <h2>Sıkça Sorulan Sorular</h2>
+      </div>
+      <div id="faqList">
+        <div class="faq-item open">
+          <button class="faq-q">Teslimat ne kadar sürüyor?
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>Kampüs çevresinde ortalama 18 dakika. Yoğun saatlerde uygulamadan canlı tahmin süresini görebilirsin.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Sadece dilim mı satıyorsunuz?
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>Esas konseptimiz dilim tabanlı; istediğin kadar, istediğin çeşitten alabilirsin. Tam pizza seçeneğimiz de mevcut — 8 dilim.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Öğrenciye özel kampanya var mı?
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>Evet — uygulamaya öğrenci kimliğini yükleyenler her ay özel indirim ve "öğle arası menüsü" fırsatlarından yararlanır.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Hangi ödeme yöntemlerini kabul ediyorsunuz?
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>Kredi/banka kartı, kapıda nakit, kapıda kart ve tüm dijital cüzdanlar — Google Pay, Apple Pay dahil.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">En yakın şubeyi nasıl bulurum?
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>Uygulamadaki "Şubeni Bul" sekmesinden konumunu paylaşarak en yakın Crust'ı saniyeler içinde görebilirsin.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRANCHISE BAŞVURU -->
+  <section class="franchise-section noise" id="basvuru">
+    <div class="wrap reveal">
+      <div class="cta-grid">
+        <div>
+          <div class="eyebrow">FRANCHISE</div>
+          <h2>Bölgenizde Crust açmaya hazır mısınız?</h2>
+          <p class="lead">Formu doldurun, ekibimiz hedef bölgenizin müsaitlik durumunu sizinle birlikte değerlendirsin.</p>
+        </div>
+        <form id="applyForm">
+          <div class="frow2">
+            <div>
+              <label for="name">Ad Soyad</label>
+              <input id="name" name="name" type="text" placeholder="Adınız Soyadınız" required>
+            </div>
+            <div>
+              <label for="phone">Telefon</label>
+              <input id="phone" name="phone" type="tel" placeholder="05XX XXX XX XX" required>
+            </div>
+          </div>
+          <div>
+            <label for="email">E-posta</label>
+            <input id="email" name="email" type="email" placeholder="ornek@eposta.com" required>
+          </div>
+          <div class="frow2">
+            <div>
+              <label for="region">Hedef Bölge / Şehir</label>
+              <input id="region" name="region" type="text" placeholder="Örn. Kadıköy, İstanbul" required>
+            </div>
+            <div>
+              <label for="experience">Sektör Deneyimi</label>
+              <select id="experience" name="experience">
+                <option>Yiyecek-içecek sektöründe deneyimliyim</option>
+                <option>İlk girişimim olacak</option>
+                <option>Mevcut bir işletmem var</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="message">Mesaj (opsiyonel)</label>
+            <textarea id="message" name="message" rows="3" placeholder="Eklemek istediğiniz bilgi"></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Başvuruyu Gönder</button>
+          <div class="form-note">Gönderdiğiniz bilgiler yalnızca franchise değerlendirme süreci için kullanılır.</div>
+          <div class="form-success" id="formSuccess">Başvurunuz alındı. Ekibimiz en kısa sürede sizinle iletişime geçecek.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="iletisim">
+    <div class="wrap cta-inner reveal">
+      <div class="eyebrow" style="justify-content:center;">MARKAMIZA KATIL</div>
+      <h2>Crust'ı yakından tanımak ister misin?</h2>
+      <p class="lead" style="margin-left:auto;margin-right:auto;">Basın içerikleri veya iş birliği için bize ulaşın.</p>
+      <a href="mailto:merhaba@crustpizza.com" class="btn btn-primary">
+        İletişime Geç
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">CRUST</div>
+        <p>Açık fırında pişirilen dilim pizza. Hızlı servis, erişilebilir fiyat.</p>
+        <div class="foot-social">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12a4 4 0 104 4V4c1 2 3 3 5 3"/></svg></a>
+          <a href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Şubeler</h4>
+        <ul>
+          <li><a href="#">Kadıköy — Bahariye</a></li>
+          <li><a href="#">Beşiktaş — Barbaros</a></li>
+          <li><a href="#">ODTÜ — Kampüs İçi</a></li>
+          <li><a href="#">Tüm şubeler</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kurumsal</h4>
+        <ul>
+          <li><a href="#deger">Hakkımızda</a></li>
+          <li><a href="#menu">Menü</a></li>
+          <li><a href="#sss">SSS</a></li>
+          <li><a href="#">Kariyer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>İletişim</h4>
+        <ul>
+          <li><a href="tel:+908502554567">0850 255 45 67</a></li>
+          <li><a href="mailto:merhaba@crustpizza.com">merhaba@crustpizza.com</a></li>
+          <li><a href="#">Destek Hattı</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Crust Pizza. Tüm hakları saklıdır.</span>
+      <span>Gizlilik · Kullanım Şartları</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const header=document.getElementById('siteHeader');
+  window.addEventListener('scroll',()=>header.classList.toggle('scrolled',window.scrollY>8));
+
+  const hamburger=document.getElementById('hamburger');
+  const navLinks=document.getElementById('navLinks');
+  hamburger.addEventListener('click',()=>{
+    const open=navLinks.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded',open);
+  });
+  navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+    navLinks.classList.remove('open');
+    hamburger.setAttribute('aria-expanded',false);
+  }));
+
+  const revealEls=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target);}
+    });
+  },{threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const btn=item.querySelector('.faq-q');
+    const ans=item.querySelector('.faq-a');
+    if(item.classList.contains('open')){ans.style.maxHeight=ans.scrollHeight+'px';}
+    btn.addEventListener('click',()=>{
+      const isOpen=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o=>{
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight=null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        ans.style.maxHeight=ans.scrollHeight+'px';
+      }
+    });
+  });
+
+  const applyForm=document.getElementById('applyForm');
+  const formSuccess=document.getElementById('formSuccess');
+  applyForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    formSuccess.classList.add('show');
+    applyForm.reset();
+    formSuccess.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+</script>
+
+</body>
+</html>
